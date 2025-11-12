@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Notes - Your Personal Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Todo Notes</h1>
+            <div class="header-actions">
+                <button class="btn-icon" id="searchBtn" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="themeToggle" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container" id="searchContainer">
+            <input type="text" id="searchInput" placeholder="Search notes..." class="search-input">
+            <button class="btn-text" id="cancelSearch">Cancel</button>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="personal">Personal</button>
+            <button class="category-btn" data-category="work">Work</button>
+            <button class="category-btn" data-category="ideas">Ideas</button>
+        </div>
+
+        <!-- Add Todo Form -->
+        <div class="add-todo-container">
+            <div class="add-todo-form">
+                <input type="text" id="todoTitle" placeholder="Title" class="todo-input">
+                <textarea id="todoContent" placeholder="Take a note..." class="todo-textarea"></textarea>
+                <div class="form-actions">
+                    <select id="todoCategory" class="category-select">
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="ideas">Ideas</option>
+                    </select>
+                    <button class="btn-primary" id="addTodoBtn">Add Note</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Todos Container -->
+        <div class="todos-container" id="todosContainer">
+            <!-- Todos will be dynamically inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" opacity="0.3">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <p>No notes yet. Create your first note!</p>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Note</h2>
+                <button class="btn-icon" id="closeModal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="editTitle" placeholder="Title" class="todo-input">
+                <textarea id="editContent" placeholder="Content" class="todo-textarea"></textarea>
+                <select id="editCategory" class="category-select">
+                    <option value="personal">Personal</option>
+                    <option value="work">Work</option>
+                    <option value="ideas">Ideas</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelEdit">Cancel</button>
+                <button class="btn-primary" id="saveEdit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
