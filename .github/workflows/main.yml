@@ -1,15 +1,12 @@
 name: Deploy TODO App to Azure VM
-
 on:
   push:
     branches:
       - develop
       - main
-
 permissions:
   id-token: write
   contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -33,11 +30,17 @@ jobs:
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
-          # Create backup
-          sudo cp -r /var/www/html/todo-app /var/www/html/todo-app-backup 2>/dev/null || true
+          # Update package list and install nginx if not present
+          if ! command -v nginx &> /dev/null; then
+            echo "Installing nginx..."
+            sudo apt-get update
+            sudo apt-get install -y nginx
+            sudo systemctl start nginx
+            sudo systemctl enable nginx
+          fi
           
           # Create directory if it doesn't exist
-          sudo mkdir -p /var/www/html/todo-app
+          sudo mkdir -p /var/www/html
           
           # Clone or pull the repository
           cd /tmp
@@ -47,13 +50,13 @@ jobs:
           git checkout ${{ github.ref_name }}
           
           # Copy files to web directory
-          sudo cp -r * /var/www/html/todo-app/
+          sudo cp -r * /var/www/html/
           
           # Set permissions
-          sudo chown -R www-data:www-data /var/www/html/todo-app
-          sudo chmod -R 755 /var/www/html/todo-app
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
           
-          # Reload web server
-          sudo systemctl reload apache2
+          # Reload nginx
+          sudo systemctl reload nginx
           
           echo "Deployment complete!"
