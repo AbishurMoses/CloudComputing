@@ -1,0 +1,65 @@
+name: Deploy TODO App to Azure VM
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: Get VM Public IP
+      id: vm-ip
+      run: |
+        # Get your VM's public IP (replace with your VM name and resource group)
+        VM_IP=$(az vm show -d -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n ${{ secrets.AZURE_VM_NAME }} --query publicIps -o tsv)
+        echo "VM_IP=$VM_IP" >> $GITHUB_OUTPUT
+    
+    - name: Deploy files to VM
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ steps.vm-ip.outputs.VM_IP }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          # Create backup
+          sudo cp -r /var/www/html/todo-app /var/www/html/todo-app-backup 2>/dev/null || true
+          
+          # Create directory if it doesn't exist
+          sudo mkdir -p /var/www/html/todo-app
+          
+          # Clone or pull the repository
+          cd /tmp
+          rm -rf CloudComputing
+          git clone https://github.com/AbishurMoses/CloudComputing.git
+          cd CloudComputing
+          git checkout ${{ github.ref_name }}
+          
+          # Copy files to web directory
+          sudo cp -r * /var/www/html/todo-app/
+          
+          # Set permissions
+          sudo chown -R www-data:www-data /var/www/html/todo-app
+          sudo chmod -R 755 /var/www/html/todo-app
+          
+          # Reload web server
+          sudo systemctl reload apache2
+          
+          echo "Deployment complete!"
