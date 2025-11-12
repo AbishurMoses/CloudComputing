@@ -163,54 +163,60 @@
     <script src="app.js"></script>
     <!-- Application Insights Telemetry -->
     <script type="text/javascript">
-      var appInsights =
-        window.appInsights ||
-        (function (config) {
-          function r(config) {
-            t[config] = function () {
-              var i = arguments;
-              t.queue.push(function () {
-                t[config].apply(t, i);
-              });
-            };
-          }
-          var t = { config: config },
-            u = document,
-            e = window,
-            o = "script";
-          setTimeout(function () {
-            var s = u.createElement(o);
-            s.src =
-              config.url ||
-              "https://az416426.vo.msecnd.net/scripts/b/ai.2.min.js";
-            u.getElementsByTagName("head")[0].appendChild(s);
-          });
-          try {
-            t.cookie = u.cookie;
-          } catch (e) {}
-          t.queue = [];
-          for (
-            var n = [
-              "Event",
-              "Exception",
-              "Metric",
-              "PageView",
-              "Trace",
-              "Dependency",
-            ];
-            n.length;
+      !(function (T, l, y) {
+        var S = T.location,
+          k = "script",
+          D = "instrumentationKey",
+          C = "ingestionendpoint",
+          I = "disableExceptionTracking",
+          E = "ai.device.",
+          b = "toLowerCase";
+        (T[l] =
+          T[l] ||
+          (function (c) {
+            var t = { config: c },
+              r = document,
+              f = T,
+              e = window,
+              o = "script";
+            setTimeout(function () {
+              var s = r.createElement(o);
+              s.src =
+                c.url || "https://az416426.vo.msecnd.net/scripts/b/ai.2.min.js";
+              r.getElementsByTagName("head")[0].appendChild(s);
+            });
+            try {
+              t.cookie = r.cookie;
+            } catch (e) {}
+            (t.queue = []), (t.version = 2);
+            for (
+              var i = [
+                "Event",
+                "Exception",
+                "Metric",
+                "PageView",
+                "Trace",
+                "Dependency",
+              ];
+              i.length;
 
-          )
-            r("track" + n.pop());
-          r("setAuthenticatedUserContext");
-          r("clearAuthenticatedUserContext");
-          r("flush");
-          config.queue = t.queue;
-          e.appInsights = t;
-          return t;
-        })({
-          connectionString: "InstrumentationKey=b8aa4cad-fcae-4b39-951c-50ca6b6b7169",
-        });
+            )
+              !(function (n) {
+                t["track" + n] = function () {
+                  var a = arguments;
+                  t.queue.push(function () {
+                    t["track" + n].apply(t, a);
+                  });
+                };
+              })(i.pop());
+            return t;
+          })((T[l].config = T[l].config || {}))),
+          (T[l].queue = []);
+      })(window, "appInsights");
+      appInsights = appInsights({
+        connectionString:
+          "InstrumentationKey=b8aa4cad-fcae-4b39-951c-50ca6b6b7169",
+      });
       appInsights.trackPageView();
     </script>
   </body>
