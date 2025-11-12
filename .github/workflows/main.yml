@@ -36,7 +36,7 @@ jobs:
     - name: Deploy files to VM
       uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secret.VM_IP }}
+        host: ${{ secrets.VM_IP }}
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
