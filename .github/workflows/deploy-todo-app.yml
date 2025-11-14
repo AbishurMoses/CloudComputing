@@ -1,0 +1,62 @@
+name: Deploy TODO App to Azure VM
+on:
+  push:
+    branches:
+      - develop
+      - main
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Dev
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+    - name: Deploy files to VM
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.VM_IP }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          # Update package list and install nginx if not present
+          if ! command -v nginx &> /dev/null; then
+            echo "Installing nginx..."
+            sudo apt-get update
+            sudo apt-get install -y nginx
+            sudo systemctl start nginx
+            sudo systemctl enable nginx
+          fi
+          
+          # Create directory if it doesn't exist
+          sudo mkdir -p /var/www/html
+          
+          # Clone or pull the repository
+          cd /tmp
+          rm -rf CloudComputing
+          git clone https://github.com/AbishurMoses/CloudComputing.git
+          cd CloudComputing
+          git checkout ${{ github.ref_name }}
+          
+          # Copy files to web directory
+          sudo cp -r * /var/www/html/
+          
+          # Set permissions
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
+          
+          # Reload nginx
+          sudo systemctl reload nginx
+          
+          echo "Deployment complete!"
